@@ -30,8 +30,10 @@ jobs:
             set net:max-retries 2;
             open -u $SFTP_USER --env-password sftp://$SFTP_HOST;
             mirror -R --verbose \
-              --exclude-glob .git* \
-              --exclude .github/ \
+              --exclude ^\.git/ \
+              --exclude ^\.github/ \
+              --exclude-glob .gitignore \
               --exclude-glob *.md \
               ./ $REMOTE_DIR;
+            rm -r -f $REMOTE_DIR.git $REMOTE_DIR.github;
             bye"
