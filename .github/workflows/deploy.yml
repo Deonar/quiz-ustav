@@ -1,0 +1,37 @@
+name: Deploy to test.devbox.stream
+
+on:
+  push:
+    branches: [main, claude/cool-lovelace-gr3w8p]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install lftp
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq lftp
+
+      - name: Upload via SFTP
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_USER: ${{ secrets.SFTP_USER }}
+          LFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+          REMOTE_DIR: ${{ vars.REMOTE_DIR || '/home/tu626562/devbox.stream/test/' }}
+        run: |
+          lftp -e "
+            set sftp:auto-confirm yes;
+            set net:max-retries 2;
+            open -u $SFTP_USER --env-password sftp://$SFTP_HOST;
+            mirror -R --verbose \
+              --exclude-glob .git* \
+              --exclude .github/ \
+              --exclude-glob *.md \
+              ./ $REMOTE_DIR;
+            bye"

@@ -26,3 +26,14 @@
 
 > ⚠️ Питання складено за текстами статутів без доступу до офіційного сайту zakon.rada.gov.ua.
 > Перед використанням звірте формулювання з чинною редакцією (особливо номери статей СВС і БСА ч. 2).
+
+## Деплой
+Workflow `.github/workflows/deploy.yml` заливає файли по SFTP на http://test.devbox.stream/
+при пуші в `main` або `claude/cool-lovelace-gr3w8p` (або вручну: Actions → Run workflow).
+
+Потрібні Secrets репозиторію (Settings → Secrets and variables → Actions):
+- `SFTP_HOST` — `tu626562.ftp.tools`
+- `SFTP_USER` — SSH-логін
+- `SFTP_PASSWORD` — SSH-пароль
+
+Необов'язково: змінна `REMOTE_DIR` (за замовчуванням `/home/tu626562/devbox.stream/test/`).
